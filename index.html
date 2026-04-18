@@ -3,204 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Almbot | Guía Holística Integrativa</title>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <title>Almbot | Guía Holística</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #a8e6cf;
-            --secondary: #dcedc1;
-            --text: #4a4a4a;
-            --bg-chat: #f9fdfc;
-            --bg-page: #f0f4f3;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
+        /* Fondo minimalista para que resalte el chat de Botpress */
         body {
+            margin: 0;
+            padding: 0;
             font-family: 'Quicksand', sans-serif;
-            background-color: var(--bg-page);
+            background-color: #f0f4f3;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            overflow: hidden; 
+            background-image: radial-gradient(#a8e6cf 0.5px, #f0f4f3 0.5px);
+            background-size: 20px 20px;
         }
 
-        .chat-wrapper {
-            width: 100%;
-            max-width: 500px;
-            height: 95dvh;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-            overflow: hidden;
-            margin: 10px;
-        }
-
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            padding: clamp(15px, 4vw, 25px);
+        .welcome-container {
             text-align: center;
-            color: var(--text);
-        }
-
-        header h1 { font-size: clamp(1.2rem, 4.5vw, 1.8rem); font-weight: 500; letter-spacing: 1px; }
-        header p { font-size: clamp(0.75rem, 3vw, 1rem); opacity: 0.9; margin-top: 5px; font-weight: 300; }
-
-        #chat-box {
-            flex: 1;
+            color: #4a4a4a;
             padding: 20px;
-            overflow-y: auto;
-            background-color: var(--bg-chat);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
         }
 
-        .message {
-            max-width: 85%;
-            padding: 12px 18px;
-            border-radius: 18px;
-            font-size: clamp(0.9rem, 2.8vw, 1rem);
-            line-height: 1.5;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .bot { background: white; color: var(--text); align-self: flex-start; border: 1px solid #e0e0e0; border-bottom-left-radius: 4px; }
-        .user { background: var(--primary); color: var(--text); align-self: flex-end; border-bottom-right-radius: 4px; }
-
-        .input-container {
-            padding: clamp(15px, 4vw, 20px);
-            background: white;
-            display: flex;
-            gap: 10px;
-            border-top: 1px solid #eee;
-        }
-
-        input {
-            flex: 1;
-            border: 1.5px solid #eee;
-            padding: 12px 20px;
-            border-radius: 30px;
-            outline: none;
-            font-family: 'Roboto', sans-serif;
-            font-size: 1rem;
-        }
-
-        button {
-            background-color: var(--primary);
-            border: none;
-            padding: 0 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        button:disabled { opacity: 0.5; }
+        h1 { font-weight: 500; color: #7db9a1; }
+        p { font-weight: 300; opacity: 0.8; }
     </style>
 </head>
 <body>
 
-    <div class="chat-wrapper">
-        <header>
-            <h1>Almbot</h1>
-            <p>Reiki • Biodecodificación • Psicología Social</p>
-        </header>
-
-        <div id="chat-box"></div>
-
-        <div class="input-container">
-            <input type="text" id="user-input" placeholder="Escribe aquí..." autocomplete="off">
-            <button id="send-btn">Enviar</button>
-        </div>
+    <div class="welcome-container">
+        <h1>Almbot</h1>
+        <p>Tu espacio de sanación y equilibrio</p>
+        <small>Haz clic en el icono para comenzar</small>
     </div>
 
-    <script>
-        const chatBox = document.getElementById('chat-box');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
-        
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbwdbcgemg7zP0_7VTZJ1b3E5T6CZaC0YHhUd5sSPH8FjgX87lAYM95nMTGA6qFkoDIZ/exec";
+    <script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2026/04/18/02/20260418025527-TASNZZYT.js" defer></script>
 
-        let userName = "";
-        let step = "asking_name";
-
-        async function handleSend() {
-            const text = userInput.value.trim();
-            if (text === "" || sendBtn.disabled) return;
-
-            addMessage(text, 'user');
-            userInput.value = "";
-            
-            if (step === "asking_name") {
-                validateName(text);
-            } else {
-                await callBackend(text);
-            }
-        }
-
-        function validateName(text) {
-            const forbiddenResponses = ["no", "ninguno", "paso", "no quiero", "no te importa", "para que", "x", "-", "."];
-            const lowerText = text.toLowerCase();
-
-            // Si el nombre es muy corto o está en la lista de negativas
-            if (text.length < 2 || forbiddenResponses.some(word => lowerText.includes(word))) {
-                setTimeout(() => {
-                    addMessage("Entiendo tu reserva, pero para que nuestra energía fluya mejor y podamos crear una conexión de sanación más profunda, me encantaría saber cómo llamarte. ¿Me confiarías tu nombre?", 'bot');
-                }, 600);
-            } else {
-                userName = text;
-                step = "chatting";
-                setTimeout(() => {
-                    addMessage(`Gracias por tu confianza, ${userName}. Ahora sí, estamos en sintonía. ¿Qué aspecto de tu ser o energía te gustaría explorar hoy?`, 'bot');
-                }, 600);
-            }
-        }
-
-        async function callBackend(text) {
-            sendBtn.disabled = true;
-            const loadingId = "loading-" + Date.now();
-            addMessage("Sintonizando...", "bot loading", loadingId);
-
-            try {
-                const finalUrl = `${GAS_URL}?message=${encodeURIComponent(text)}&name=${encodeURIComponent(userName)}`;
-                const response = await fetch(finalUrl);
-                const data = await response.json();
-                
-                const loadingElement = document.getElementById(loadingId);
-                if (loadingElement) loadingElement.remove();
-                
-                addMessage(data.reply, 'bot');
-            } catch (error) {
-                const loadingElement = document.getElementById(loadingId);
-                if (loadingElement) loadingElement.innerText = "La conexión es inestable. Intenta de nuevo.";
-            } finally {
-                sendBtn.disabled = false;
-            }
-        }
-
-        function addMessage(text, type, id = null) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `message ${type}`;
-            if (id) msgDiv.id = id;
-            msgDiv.innerText = text;
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        window.onload = () => {
-            setTimeout(() => {
-                addMessage("¡Hola! Te doy la bienvenida a este espacio de equilibrio. Para comenzar, ¿cómo te llamas?", 'bot');
-            }, 500);
-        };
-
-        sendBtn.addEventListener('click', handleSend);
-        userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSend(); });
-    </script>
 </body>
 </html>
