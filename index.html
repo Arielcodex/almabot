@@ -14,11 +14,7 @@
             --bg-page: #f0f4f3;
         }
 
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Quicksand', sans-serif;
@@ -27,15 +23,13 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            /* Evita el scroll elástico en móviles */
             overflow: hidden; 
         }
 
-        /* Contenedor Principal Adaptable */
         .chat-wrapper {
             width: 100%;
             max-width: 500px;
-            height: 95dvh; /* Altura dinámica para móviles */
+            height: 95dvh;
             background: white;
             display: flex;
             flex-direction: column;
@@ -45,7 +39,6 @@
             margin: 10px;
         }
 
-        /* Encabezado con Texto Responsivo */
         header {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             padding: clamp(15px, 4vw, 25px);
@@ -53,22 +46,9 @@
             color: var(--text);
         }
 
-        header h1 {
-            /* Mínimo 1.2rem, escala 4% del ancho, máximo 1.8rem */
-            font-size: clamp(1.2rem, 4.5vw, 1.8rem);
-            font-weight: 500;
-            letter-spacing: 1px;
-        }
+        header h1 { font-size: clamp(1.2rem, 4.5vw, 1.8rem); font-weight: 500; letter-spacing: 1px; }
+        header p { font-size: clamp(0.75rem, 3vw, 1rem); opacity: 0.9; margin-top: 5px; font-weight: 300; }
 
-        header p {
-            /* Mínimo 0.75rem, escala 2.5% del ancho, máximo 1rem */
-            font-size: clamp(0.75rem, 3vw, 1rem);
-            opacity: 0.9;
-            margin-top: 5px;
-            font-weight: 300;
-        }
-
-        /* Área de Chat */
         #chat-box {
             flex: 1;
             padding: 20px;
@@ -77,7 +57,6 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            scrollbar-width: thin;
         }
 
         .message {
@@ -89,29 +68,11 @@
             animation: fadeIn 0.3s ease;
         }
 
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .bot { 
-            background: white; 
-            color: var(--text); 
-            align-self: flex-start; 
-            border: 1px solid #e0e0e0; 
-            border-bottom-left-radius: 4px; 
-        }
+        .bot { background: white; color: var(--text); align-self: flex-start; border: 1px solid #e0e0e0; border-bottom-left-radius: 4px; }
+        .user { background: var(--primary); color: var(--text); align-self: flex-end; border-bottom-right-radius: 4px; }
 
-        .user { 
-            background: var(--primary); 
-            color: var(--text); 
-            align-self: flex-end; 
-            border-bottom-right-radius: 4px; 
-        }
-
-        .loading { font-style: italic; opacity: 0.6; font-size: 0.85rem; }
-
-        /* Entrada de Texto */
         .input-container {
             padding: clamp(15px, 4vw, 20px);
             background: white;
@@ -138,7 +99,6 @@
             cursor: pointer;
             font-weight: 600;
             color: var(--text);
-            transition: background 0.3s;
         }
 
         button:disabled { opacity: 0.5; }
@@ -155,7 +115,7 @@
         <div id="chat-box"></div>
 
         <div class="input-container">
-            <input type="text" id="user-input" placeholder="Escribe tu consulta..." autocomplete="off">
+            <input type="text" id="user-input" placeholder="Escribe aquí..." autocomplete="off">
             <button id="send-btn">Enviar</button>
         </div>
     </div>
@@ -165,7 +125,6 @@
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
         
-        // URL de tu Google Apps Script (Verificada sin puntos finales)
         const GAS_URL = "https://script.google.com/macros/s/AKfycbwdbcgemg7zP0_7VTZJ1b3E5T6CZaC0YHhUd5sSPH8FjgX87lAYM95nMTGA6qFkoDIZ/exec";
 
         let userName = "";
@@ -179,11 +138,27 @@
             userInput.value = "";
             
             if (step === "asking_name") {
-                userName = text;
-                step = "chatting";
-                addMessage(`Es un gusto saludarte, ${userName}. Soy tu asistente holístico. ¿Qué aspecto de tu ser o energía te gustaría explorar hoy?`, 'bot');
+                validateName(text);
             } else {
                 await callBackend(text);
+            }
+        }
+
+        function validateName(text) {
+            const forbiddenResponses = ["no", "ninguno", "paso", "no quiero", "no te importa", "para que", "x", "-", "."];
+            const lowerText = text.toLowerCase();
+
+            // Si el nombre es muy corto o está en la lista de negativas
+            if (text.length < 2 || forbiddenResponses.some(word => lowerText.includes(word))) {
+                setTimeout(() => {
+                    addMessage("Entiendo tu reserva, pero para que nuestra energía fluya mejor y podamos crear una conexión de sanación más profunda, me encantaría saber cómo llamarte. ¿Me confiarías tu nombre?", 'bot');
+                }, 600);
+            } else {
+                userName = text;
+                step = "chatting";
+                setTimeout(() => {
+                    addMessage(`Gracias por tu confianza, ${userName}. Ahora sí, estamos en sintonía. ¿Qué aspecto de tu ser o energía te gustaría explorar hoy?`, 'bot');
+                }, 600);
             }
         }
 
@@ -193,9 +168,7 @@
             addMessage("Sintonizando...", "bot loading", loadingId);
 
             try {
-                // Petición GET para evitar problemas de CORS en navegadores
                 const finalUrl = `${GAS_URL}?message=${encodeURIComponent(text)}&name=${encodeURIComponent(userName)}`;
-                
                 const response = await fetch(finalUrl);
                 const data = await response.json();
                 
@@ -204,11 +177,8 @@
                 
                 addMessage(data.reply, 'bot');
             } catch (error) {
-                console.error("Error de conexión:", error);
                 const loadingElement = document.getElementById(loadingId);
-                if (loadingElement) {
-                    loadingElement.innerText = "La conexión es inestable. Por favor, intenta de nuevo.";
-                }
+                if (loadingElement) loadingElement.innerText = "La conexión es inestable. Intenta de nuevo.";
             } finally {
                 sendBtn.disabled = false;
             }
@@ -223,7 +193,6 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // Saludo inicial automático
         window.onload = () => {
             setTimeout(() => {
                 addMessage("¡Hola! Te doy la bienvenida a este espacio de equilibrio. Para comenzar, ¿cómo te llamas?", 'bot');
