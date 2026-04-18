@@ -166,11 +166,14 @@
             <button id="send-btn">Enviar</button>
         </div>
     </div>
-
-    <script>
+<script>
         const chatBox = document.getElementById('chat-box');
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
+
+        // Variables de estado del bot
+        let userName = "";
+        let step = "asking_name"; // El primer paso es preguntar el nombre
 
         // Función para enviar mensaje
         function handleSend() {
@@ -180,28 +183,40 @@
             addMessage(text, 'user');
             userInput.value = "";
 
-            // Simular respuesta del agente
             setTimeout(() => {
-                const response = getHolisticResponse(text);
-                addMessage(response, 'bot');
+                processResponse(text);
             }, 800);
         }
 
-        // Lógica básica de respuestas (Simulada)
+        function processResponse(text) {
+            let response = "";
+
+            if (step === "asking_name") {
+                userName = text;
+                step = "chatting"; // Cambiamos al modo de chat normal
+                response = `Es un gusto saludarte, ${userName}. Me presento: soy tu guía especializado en Reiki, Biodecodificación y Psicología Social. ¿En qué área de tu ser te gustaría profundizar hoy?`;
+            } else {
+                response = getHolisticResponse(text);
+            }
+
+            addMessage(response, 'bot');
+        }
+
+        // Lógica holística (mejorada con el nombre)
         function getHolisticResponse(input) {
             const lowText = input.toLowerCase();
             
             if (lowText.includes("garganta")) {
-                return "En biodecodificación, la garganta representa la expresión. ¿Hay algo que sientas que no has podido comunicar o una verdad que estés reteniendo?";
+                return `${userName}, en biodecodificación la garganta es el centro de la expresión. ¿Hay algo que sientas que no has podido comunicar últimamente?`;
             }
             if (lowText.includes("estres") || lowText.includes("estrés")) {
-                return "Para el estrés, te sugiero visualizar una luz verde en el centro de tu pecho. Respira profundo y permite que la energía del Reiki armonice tu sistema nervioso.";
+                return `El estrés suele ser un exceso de futuro, ${userName}. Te sugiero una pausa: visualiza una luz verde en tu plexo solar para armonizar tu energía Reiki.`;
             }
-            if (lowText.includes("vínculo") || lowText.includes("grupo")) {
-                return "Desde la psicología social, recuerda que somos seres vinculares. ¿Cómo sientes que este grupo influye en tu subjetividad actual?";
+            if (lowText.includes("gracias") || lowText.includes("chau")) {
+                return `Gracias a ti por este espacio, ${userName}. Que la luz y el equilibrio te acompañen.`;
             }
             
-            return "Entiendo. Cuéntame más sobre esa sensación para que podamos analizarla desde la biodecodificación o el equilibrio energético.";
+            return `Te escucho, ${userName}. ¿Cómo resuena esa sensación en tu cuerpo o en tus vínculos sociales?`;
         }
 
         function addMessage(text, type) {
@@ -211,6 +226,13 @@
             chatBox.appendChild(msgDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
+
+        // Iniciar con el saludo automático al cargar la página
+        window.onload = () => {
+            setTimeout(() => {
+                addMessage("¡Hola! Bienvenido a este espacio de sanación. Para comenzar, ¿cómo te llamas?", 'bot');
+            }, 500);
+        };
 
         // Eventos
         sendBtn.addEventListener('click', handleSend);
