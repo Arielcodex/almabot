@@ -10,70 +10,113 @@
             --primary: #a8e6cf;
             --secondary: #dcedc1;
             --text: #4a4a4a;
-            --bg: #f9fdfc;
+            --bg-chat: #f9fdfc;
+            --bg-page: #f0f4f3;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
 
         body {
             font-family: 'Quicksand', sans-serif;
-            background-color: #f0f4f3;
+            background-color: var(--bg-page);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            /* Evita el scroll elástico en móviles */
+            overflow: hidden; 
         }
 
+        /* Contenedor Principal Adaptable */
         .chat-wrapper {
             width: 100%;
             max-width: 500px;
-            height: 90vh;
+            height: 95dvh; /* Altura dinámica para móviles */
             background: white;
             display: flex;
             flex-direction: column;
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.05);
             overflow: hidden;
+            margin: 10px;
         }
 
+        /* Encabezado con Texto Responsivo */
         header {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            padding: 20px;
+            padding: clamp(15px, 4vw, 25px);
             text-align: center;
             color: var(--text);
         }
 
+        header h1 {
+            /* Mínimo 1.2rem, escala 4% del ancho, máximo 1.8rem */
+            font-size: clamp(1.2rem, 4.5vw, 1.8rem);
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            /* Mínimo 0.75rem, escala 2.5% del ancho, máximo 1rem */
+            font-size: clamp(0.75rem, 3vw, 1rem);
+            opacity: 0.9;
+            margin-top: 5px;
+            font-weight: 300;
+        }
+
+        /* Área de Chat */
         #chat-box {
             flex: 1;
             padding: 20px;
             overflow-y: auto;
-            background-color: var(--bg);
+            background-color: var(--bg-chat);
             display: flex;
             flex-direction: column;
             gap: 15px;
+            scrollbar-width: thin;
         }
 
         .message {
             max-width: 85%;
             padding: 12px 18px;
             border-radius: 18px;
-            font-size: 0.95rem;
+            font-size: clamp(0.9rem, 2.8vw, 1rem);
             line-height: 1.5;
             animation: fadeIn 0.3s ease;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
 
-        .bot { background: white; color: var(--text); align-self: flex-start; border: 1px solid #e0e0e0; border-bottom-left-radius: 4px; }
-        .user { background: var(--primary); color: var(--text); align-self: flex-end; border-bottom-right-radius: 4px; }
+        .bot { 
+            background: white; 
+            color: var(--text); 
+            align-self: flex-start; 
+            border: 1px solid #e0e0e0; 
+            border-bottom-left-radius: 4px; 
+        }
+
+        .user { 
+            background: var(--primary); 
+            color: var(--text); 
+            align-self: flex-end; 
+            border-bottom-right-radius: 4px; 
+        }
 
         .loading { font-style: italic; opacity: 0.6; font-size: 0.85rem; }
 
+        /* Entrada de Texto */
         .input-container {
-            padding: 20px;
+            padding: clamp(15px, 4vw, 20px);
             background: white;
             display: flex;
-            gap: 12px;
+            gap: 10px;
             border-top: 1px solid #eee;
         }
 
@@ -83,6 +126,8 @@
             padding: 12px 20px;
             border-radius: 30px;
             outline: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1rem;
         }
 
         button {
@@ -93,9 +138,10 @@
             cursor: pointer;
             font-weight: 600;
             color: var(--text);
+            transition: background 0.3s;
         }
 
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button:disabled { opacity: 0.5; }
     </style>
 </head>
 <body>
@@ -109,7 +155,7 @@
         <div id="chat-box"></div>
 
         <div class="input-container">
-            <input type="text" id="user-input" placeholder="Escribe aquí..." autocomplete="off">
+            <input type="text" id="user-input" placeholder="Escribe tu consulta..." autocomplete="off">
             <button id="send-btn">Enviar</button>
         </div>
     </div>
@@ -119,6 +165,7 @@
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
         
+        // URL de tu Google Apps Script (Verificada sin puntos finales)
         const GAS_URL = "https://script.google.com/macros/s/AKfycbwdbcgemg7zP0_7VTZJ1b3E5T6CZaC0YHhUd5sSPH8FjgX87lAYM95nMTGA6qFkoDIZ/exec";
 
         let userName = "";
@@ -134,7 +181,7 @@
             if (step === "asking_name") {
                 userName = text;
                 step = "chatting";
-                addMessage(`Es un gusto saludarte, ${userName}. Soy Almbot. ¿En qué área de tu bienestar te gustaría profundizar hoy? (Reiki, Biodecodificación, Vínculos...)`, 'bot');
+                addMessage(`Es un gusto saludarte, ${userName}. Soy tu asistente holístico. ¿Qué aspecto de tu ser o energía te gustaría explorar hoy?`, 'bot');
             } else {
                 await callBackend(text);
             }
@@ -143,31 +190,25 @@
         async function callBackend(text) {
             sendBtn.disabled = true;
             const loadingId = "loading-" + Date.now();
-            addMessage("Conectando con tu energía...", "bot loading", loadingId);
+            addMessage("Sintonizando...", "bot loading", loadingId);
 
             try {
-                const response = await fetch(GAS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Importante para Google Apps Script desde el navegador
-                    body: JSON.stringify({ message: text, name: userName })
-                });
-
-                // Nota: Debido al modo 'no-cors', no siempre podemos leer la respuesta directa por seguridad del navegador.
-                // Si el bot no responde en tu prueba, necesitaremos ajustar el código de Google Apps Script 
-                // para permitir solicitudes de origen cruzado (CORS).
+                // Petición GET para evitar problemas de CORS en navegadores
+                const finalUrl = `${GAS_URL}?message=${encodeURIComponent(text)}&name=${encodeURIComponent(userName)}`;
                 
-                // Por ahora, simulamos la espera de la API.
-                // Si ya configuraste el doPost correctamente, el bot debería procesar la info.
+                const response = await fetch(finalUrl);
+                const data = await response.json();
                 
-                // Como alternativa segura para leer la respuesta:
-                const realResponse = await fetch(GAS_URL + "?message=" + encodeURIComponent(text) + "&name=" + encodeURIComponent(userName));
-                const data = await realResponse.json();
+                const loadingElement = document.getElementById(loadingId);
+                if (loadingElement) loadingElement.remove();
                 
-                document.getElementById(loadingId).remove();
                 addMessage(data.reply, 'bot');
             } catch (error) {
-                console.error(error);
-                document.getElementById(loadingId).innerText = "Resintonizando... cuéntame un poco más.";
+                console.error("Error de conexión:", error);
+                const loadingElement = document.getElementById(loadingId);
+                if (loadingElement) {
+                    loadingElement.innerText = "La conexión es inestable. Por favor, intenta de nuevo.";
+                }
             } finally {
                 sendBtn.disabled = false;
             }
@@ -182,9 +223,10 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
+        // Saludo inicial automático
         window.onload = () => {
             setTimeout(() => {
-                addMessage("¡Hola! Bienvenido a este espacio de introspección. Para comenzar, ¿cómo te llamas?", 'bot');
+                addMessage("¡Hola! Te doy la bienvenida a este espacio de equilibrio. Para comenzar, ¿cómo te llamas?", 'bot');
             }, 500);
         };
 
