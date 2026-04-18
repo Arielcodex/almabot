@@ -3,22 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agente Holístico | Reiki & Biodecodificación</title>
+    <title>Almbot | Guía Holística Integrativa</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #a8e6cf; /* Verde menta suave */
-            --secondary-color: #dcedc1; /* Verde crema */
-            --accent-color: #ffd3b6; /* Durazno suave */
-            --text-dark: #4a4a4a;
-            --bg-light: #f9fdfc;
+            --primary: #a8e6cf;
+            --secondary: #dcedc1;
+            --text: #4a4a4a;
+            --bg: #f9fdfc;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Quicksand', sans-serif;
@@ -29,7 +24,6 @@
             height: 100vh;
         }
 
-        /* Contenedor Principal */
         .chat-wrapper {
             width: 100%;
             max-width: 500px;
@@ -40,35 +34,20 @@
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.05);
             overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.05);
         }
 
-        /* Encabezado */
         header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            padding: 25px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 20px;
             text-align: center;
-            color: var(--text-dark);
+            color: var(--text);
         }
 
-        header h1 {
-            font-size: 1.4rem;
-            font-weight: 500;
-            letter-spacing: 1px;
-        }
-
-        header p {
-            font-size: 0.85rem;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-
-        /* Área de Mensajes */
         #chat-box {
             flex: 1;
             padding: 20px;
             overflow-y: auto;
-            background-color: var(--bg-light);
+            background-color: var(--bg);
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -83,27 +62,13 @@
             animation: fadeIn 0.3s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .bot {
-            background: white;
-            color: var(--text-dark);
-            align-self: flex-start;
-            border: 1px solid #e0e0e0;
-            border-bottom-left-radius: 4px;
-        }
+        .bot { background: white; color: var(--text); align-self: flex-start; border: 1px solid #e0e0e0; border-bottom-left-radius: 4px; }
+        .user { background: var(--primary); color: var(--text); align-self: flex-end; border-bottom-right-radius: 4px; }
 
-        .user {
-            background: var(--primary-color);
-            color: var(--text-dark);
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
+        .loading { font-style: italic; opacity: 0.6; font-size: 0.85rem; }
 
-        /* Área de Entrada */
         .input-container {
             padding: 20px;
             background: white;
@@ -118,127 +83,113 @@
             padding: 12px 20px;
             border-radius: 30px;
             outline: none;
-            font-family: 'Roboto', sans-serif;
-            transition: border 0.3s;
-        }
-
-        input:focus {
-            border-color: var(--primary-color);
         }
 
         button {
-            background-color: var(--primary-color);
+            background-color: var(--primary);
             border: none;
-            color: var(--text-dark);
             padding: 0 20px;
             border-radius: 30px;
             cursor: pointer;
             font-weight: 600;
-            transition: transform 0.2s, background 0.3s;
+            color: var(--text);
         }
 
-        button:hover {
-            background-color: #92d4bc;
-            transform: scale(1.05);
-        }
-
-        /* Scrollbar Personalizada */
-        #chat-box::-webkit-scrollbar { width: 6px; }
-        #chat-box::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
     <div class="chat-wrapper">
         <header>
-            <h1>Agente Holístico</h1>
-            <p>Psicología Social • Reiki • Biodecodificación</p>
+            <h1>Almbot</h1>
+            <p>Reiki • Biodecodificación • Psicología Social</p>
         </header>
 
-        <div id="chat-box">
-            <div class="message bot">
-                Hola, Esteban. Soy tu asistente integrativo. Estoy aquí para acompañarte a decodificar tus emociones o armonizar tu energía. ¿Cómo te sientes hoy?
-            </div>
-        </div>
+        <div id="chat-box"></div>
 
         <div class="input-container">
-            <input type="text" id="user-input" placeholder="Escribe un síntoma o emoción..." autocomplete="off">
+            <input type="text" id="user-input" placeholder="Escribe aquí..." autocomplete="off">
             <button id="send-btn">Enviar</button>
         </div>
     </div>
-<script>
+
+    <script>
         const chatBox = document.getElementById('chat-box');
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
+        
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbwdbcgemg7zP0_7VTZJ1b3E5T6CZaC0YHhUd5sSPH8FjgX87lAYM95nMTGA6qFkoDIZ/exec";
 
-        // Variables de estado del bot
         let userName = "";
-        let step = "asking_name"; // El primer paso es preguntar el nombre
+        let step = "asking_name";
 
-        // Función para enviar mensaje
-        function handleSend() {
+        async function handleSend() {
             const text = userInput.value.trim();
-            if (text === "") return;
+            if (text === "" || sendBtn.disabled) return;
 
             addMessage(text, 'user');
             userInput.value = "";
-
-            setTimeout(() => {
-                processResponse(text);
-            }, 800);
-        }
-
-        function processResponse(text) {
-            let response = "";
-
+            
             if (step === "asking_name") {
                 userName = text;
-                step = "chatting"; // Cambiamos al modo de chat normal
-                response = `Es un gusto saludarte, ${userName}. Me presento: soy tu guía especializado en Reiki, Biodecodificación y Psicología Social. ¿En qué área de tu ser te gustaría profundizar hoy?`;
+                step = "chatting";
+                addMessage(`Es un gusto saludarte, ${userName}. Soy Almbot. ¿En qué área de tu bienestar te gustaría profundizar hoy? (Reiki, Biodecodificación, Vínculos...)`, 'bot');
             } else {
-                response = getHolisticResponse(text);
+                await callBackend(text);
             }
-
-            addMessage(response, 'bot');
         }
 
-        // Lógica holística (mejorada con el nombre)
-        function getHolisticResponse(input) {
-            const lowText = input.toLowerCase();
-            
-            if (lowText.includes("garganta")) {
-                return `${userName}, en biodecodificación la garganta es el centro de la expresión. ¿Hay algo que sientas que no has podido comunicar últimamente?`;
+        async function callBackend(text) {
+            sendBtn.disabled = true;
+            const loadingId = "loading-" + Date.now();
+            addMessage("Conectando con tu energía...", "bot loading", loadingId);
+
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Importante para Google Apps Script desde el navegador
+                    body: JSON.stringify({ message: text, name: userName })
+                });
+
+                // Nota: Debido al modo 'no-cors', no siempre podemos leer la respuesta directa por seguridad del navegador.
+                // Si el bot no responde en tu prueba, necesitaremos ajustar el código de Google Apps Script 
+                // para permitir solicitudes de origen cruzado (CORS).
+                
+                // Por ahora, simulamos la espera de la API.
+                // Si ya configuraste el doPost correctamente, el bot debería procesar la info.
+                
+                // Como alternativa segura para leer la respuesta:
+                const realResponse = await fetch(GAS_URL + "?message=" + encodeURIComponent(text) + "&name=" + encodeURIComponent(userName));
+                const data = await realResponse.json();
+                
+                document.getElementById(loadingId).remove();
+                addMessage(data.reply, 'bot');
+            } catch (error) {
+                console.error(error);
+                document.getElementById(loadingId).innerText = "Resintonizando... cuéntame un poco más.";
+            } finally {
+                sendBtn.disabled = false;
             }
-            if (lowText.includes("estres") || lowText.includes("estrés")) {
-                return `El estrés suele ser un exceso de futuro, ${userName}. Te sugiero una pausa: visualiza una luz verde en tu plexo solar para armonizar tu energía Reiki.`;
-            }
-            if (lowText.includes("gracias") || lowText.includes("chau")) {
-                return `Gracias a ti por este espacio, ${userName}. Que la luz y el equilibrio te acompañen.`;
-            }
-            
-            return `Te escucho, ${userName}. ¿Cómo resuena esa sensación en tu cuerpo o en tus vínculos sociales?`;
         }
 
-        function addMessage(text, type) {
+        function addMessage(text, type, id = null) {
             const msgDiv = document.createElement('div');
-            msgDiv.classList.add('message', type);
+            msgDiv.className = `message ${type}`;
+            if (id) msgDiv.id = id;
             msgDiv.innerText = text;
             chatBox.appendChild(msgDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // Iniciar con el saludo automático al cargar la página
         window.onload = () => {
             setTimeout(() => {
-                addMessage("¡Hola! Bienvenido a este espacio de sanación. Para comenzar, ¿cómo te llamas?", 'bot');
+                addMessage("¡Hola! Bienvenido a este espacio de introspección. Para comenzar, ¿cómo te llamas?", 'bot');
             }, 500);
         };
 
-        // Eventos
         sendBtn.addEventListener('click', handleSend);
-        userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleSend();
-        });
+        userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSend(); });
     </script>
 </body>
 </html>
