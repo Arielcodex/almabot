@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agente Holístico | Reiki & Biodecodificación</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #a8e6cf; /* Verde menta suave */
+            --secondary-color: #dcedc1; /* Verde crema */
+            --accent-color: #ffd3b6; /* Durazno suave */
+            --text-dark: #4a4a4a;
+            --bg-light: #f9fdfc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f0f4f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Contenedor Principal */
+        .chat-wrapper {
+            width: 100%;
+            max-width: 500px;
+            height: 90vh;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* Encabezado */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 25px;
+            text-align: center;
+            color: var(--text-dark);
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        /* Área de Mensajes */
+        #chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bot {
+            background: white;
+            color: var(--text-dark);
+            align-self: flex-start;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .user {
+            background: var(--primary-color);
+            color: var(--text-dark);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        /* Área de Entrada */
+        .input-container {
+            padding: 20px;
+            background: white;
+            display: flex;
+            gap: 12px;
+            border-top: 1px solid #eee;
+        }
+
+        input {
+            flex: 1;
+            border: 1.5px solid #eee;
+            padding: 12px 20px;
+            border-radius: 30px;
+            outline: none;
+            font-family: 'Roboto', sans-serif;
+            transition: border 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            border: none;
+            color: var(--text-dark);
+            padding: 0 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        button:hover {
+            background-color: #92d4bc;
+            transform: scale(1.05);
+        }
+
+        /* Scrollbar Personalizada */
+        #chat-box::-webkit-scrollbar { width: 6px; }
+        #chat-box::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="chat-wrapper">
+        <header>
+            <h1>Agente Holístico</h1>
+            <p>Psicología Social • Reiki • Biodecodificación</p>
+        </header>
+
+        <div id="chat-box">
+            <div class="message bot">
+                Hola, Esteban. Soy tu asistente integrativo. Estoy aquí para acompañarte a decodificar tus emociones o armonizar tu energía. ¿Cómo te sientes hoy?
+            </div>
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Escribe un síntoma o emoción..." autocomplete="off">
+            <button id="send-btn">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        // Función para enviar mensaje
+        function handleSend() {
+            const text = userInput.value.trim();
+            if (text === "") return;
+
+            addMessage(text, 'user');
+            userInput.value = "";
+
+            // Simular respuesta del agente
+            setTimeout(() => {
+                const response = getHolisticResponse(text);
+                addMessage(response, 'bot');
+            }, 800);
+        }
+
+        // Lógica básica de respuestas (Simulada)
+        function getHolisticResponse(input) {
+            const lowText = input.toLowerCase();
+            
+            if (lowText.includes("garganta")) {
+                return "En biodecodificación, la garganta representa la expresión. ¿Hay algo que sientas que no has podido comunicar o una verdad que estés reteniendo?";
+            }
+            if (lowText.includes("estres") || lowText.includes("estrés")) {
+                return "Para el estrés, te sugiero visualizar una luz verde en el centro de tu pecho. Respira profundo y permite que la energía del Reiki armonice tu sistema nervioso.";
+            }
+            if (lowText.includes("vínculo") || lowText.includes("grupo")) {
+                return "Desde la psicología social, recuerda que somos seres vinculares. ¿Cómo sientes que este grupo influye en tu subjetividad actual?";
+            }
+            
+            return "Entiendo. Cuéntame más sobre esa sensación para que podamos analizarla desde la biodecodificación o el equilibrio energético.";
+        }
+
+        function addMessage(text, type) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', type);
+            msgDiv.innerText = text;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Eventos
+        sendBtn.addEventListener('click', handleSend);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+    </script>
+</body>
+</html>
