@@ -8,43 +8,81 @@
     
     <style>
         body {
-            margin: 0; padding: 0;
+            margin: 0;
+            padding: 0;
             font-family: 'Quicksand', sans-serif;
             background-color: #f4f7f6;
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .welcome-container { text-align: center; padding: 20px; }
+        .welcome-container {
+            text-align: center;
+            padding: 20px;
+            z-index: 1;
+        }
+
         h1 { color: #4a7c59; font-weight: 600; margin-bottom: 5px; }
         .subtitle { color: #666; font-size: 1.1em; font-style: italic; }
 
-        /* PANEL DE FUENTES */
+        /* CONTROLES DE ACCESIBILIDAD */
         .top-controls {
-            position: fixed; top: 20px; right: 20px;
-            display: flex; align-items: center; gap: 10px;
-            z-index: 10000; /* Aseguramos que esté por encima de todo */
-            background: white;
-            padding: 10px 15px; border-radius: 30px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 10000; /* Prioridad máxima para que sea clickable */
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 15px;
+            border-radius: 30px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .font-btn {
-            font-family: 'Quicksand', sans-serif; font-weight: 600;
-            cursor: pointer; border-radius: 50%;
-            border: 1.5px solid #4a7c59; background: white; color: #4a7c59;
-            width: 35px; height: 35px; transition: 0.3s;
+        .font-label {
+            font-size: 0.85em;
+            color: #4a7c59;
+            font-weight: 600;
         }
 
-        .font-btn.active { background: #4a7c59; color: white; }
+        .font-btn {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 50%;
+            border: 1.5px solid #4a7c59;
+            background-color: white;
+            color: #4a7c59;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            outline: none;
+        }
 
-        @media print { .welcome-container, .top-controls { display: none !important; } }
+        .font-btn:hover { transform: scale(1.1); }
+        .font-btn.active { background-color: #4a7c59; color: white; }
+
+        /* Ajuste para que el chat no tape los controles en móviles */
+        @media (max-width: 600px) {
+            .top-controls { top: 10px; right: 10px; padding: 5px 10px; }
+        }
+
+        @media print {
+            .welcome-container, .top-controls { display: none !important; }
+        }
     </style>
 </head>
 <body>
 
     <div class="top-controls">
-        <span style="font-size: 0.8em; color: #4a7c59; font-weight: 600;">Letra:</span>
+        <span class="font-label">Texto:</span>
         <button class="font-btn" id="btn-sm" onclick="updateFontSize('16px')">A</button>
         <button class="font-btn" id="btn-md" onclick="updateFontSize('20px')">A+</button>
         <button class="font-btn" id="btn-lg" onclick="updateFontSize('24px')">A++</button>
@@ -59,29 +97,39 @@
     <script src="https://files.bpcontent.cloud/2024/10/21/18/20241021183141-8J5E6R3Y.js"></script>
 
     <script>
+        // 1. GESTIÓN DE PERSISTENCIA DE FUENTE
         const savedSize = localStorage.getItem('almbot-font-size') || '18px';
 
         function updateFontSize(size) {
             localStorage.setItem('almbot-font-size', size);
-            window.location.reload();
+            window.location.reload(); // Recarga necesaria para re-inyectar el CSS al Iframe de Botpress
         }
 
-        // Inicializamos con un ligero retraso para asegurar que el script de Botpress cargó
-        window.addEventListener('load', function() {
-            window.botpressWebChat.init({
-                "extraStylesheet": `
-                    body { font-family: 'Quicksand', sans-serif !important; }
-                    .bpw-chat-bubble-content { font-size: ${savedSize} !important; line-height: 1.6 !important; }
-                    /* Aseguramos que el botón nativo sea visible */
-                    .bpw-floating-button { display: flex !important; visibility: visible !important; }
-                `
-            });
+        // 2. INICIALIZACIÓN DE BOTPRESS
+        window.botpressWebChat.init({
+            "extraStylesheet": `
+                /* Aplicar tipografía Quicksand al interior del chat */
+                body { 
+                    font-family: 'Quicksand', sans-serif !important; 
+                }
+                
+                /* Tamaño dinámico de las burbujas de texto */
+                .bpw-chat-bubble-content { 
+                    font-size: ${savedSize} !important; 
+                    line-height: 1.6 !important; 
+                }
 
-            // Marcar el botón activo
-            if (savedSize === '16px') document.getElementById('btn-sm').classList.add('active');
-            if (savedSize === '20px') document.getElementById('btn-md').classList.add('active');
-            if (savedSize === '24px') document.getElementById('btn-lg').classList.add('active');
+                /* Asegurar que el botón flotante nativo de Botpress sea visible y clickable */
+                .bpw-floating-button { 
+                    display: flex !important; 
+                    visibility: visible !important;
+                }
+
+                /* Ajuste de color del encabezado para coherencia visual */
+                .bpw-header-container {
+                    background-color: #4a7c59 !important;
+                }
+            `
         });
-    </script>
-</body>
-</html>
+
+        // 3. MARCAR EL
