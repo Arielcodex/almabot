@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlmBot - Facilitador de herramientas para la vida</title>
+    <title>AlmBot - Herramientas para la vida</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
@@ -40,10 +40,9 @@
             margin: 0 auto;
         }
 
-        /* Limpieza para impresión de la bitácora */
-        @media print {
-            .welcome-container { display: none !important; }
-            body { background: white !important; }
+        /* Aseguramos que el widget tenga espacio para mostrarse */
+        #bp-webchat-container {
+            z-index: 9999;
         }
     </style>
 </head>
@@ -54,33 +53,30 @@
         <p class="subtitle">Facilitador de herramientas para la vida, situaciones, emociones, biodecodificación y terapias holísticas.</p>
     </div>
 
-    <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
-    <script src="https://files.bpcontent.cloud/2024/10/21/18/20241021183141-8J5E6R3Y.js"></script>
+    <script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2026/04/18/02/20260418025527-TASNZZYT.js" defer></script>
 
     <script>
-        // Inicialización limpia sin botones externos de fuente
+        // Configuración para la versión v3.6
+        window.botpressWebChat.onEvent(function (event) {
+            // Cuando el bot termina de cargar, forzamos que se abra la ventana
+            if (event.type === 'LIFECYCLE.LOADED') {
+                window.botpressWebChat.sendEvent({ type: 'show' });
+            }
+        }, ['LIFECYCLE.LOADED']);
+
+        // Personalización visual del chat
         window.botpressWebChat.init({
-            "extraStylesheet": `
-                body { 
-                    font-family: 'Quicksand', sans-serif !important; 
+            "themeName": "light",
+            "fontFamily": "Quicksand",
+            "overrides": {
+                "header": {
+                    "backgroundColor": "#4a7c59"
+                },
+                "launcher": {
+                    "backgroundColor": "#4a7c59"
                 }
-                .bpw-header-container {
-                    background-color: #4a7c59 !important;
-                }
-                .bpw-chat-bubble-content {
-                    font-size: 18px !important;
-                    line-height: 1.5 !important;
-                }
-                /* FORZAMOS QUE EL BOTÓN FLOTANTE SEA VISIBLE */
-                .bpw-floating-button {
-                    display: flex !important;
-                    visibility: visible !important;
-                    background-color: #4a7c59 !important;
-                }
-            `,
-            "enableConversationDeletion": true,
-            "showPoweredBy": false,
-            "theme": "light"
+            }
         });
     </script>
 </body>
