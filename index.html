@@ -11,11 +11,12 @@
             margin: 0;
             padding: 0;
             font-family: 'Quicksand', sans-serif;
-            background-color: #f4f7f6; /* Un color suave de fondo */
+            background-color: #f4f7f6;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            overflow: hidden;
         }
 
         .welcome-container {
@@ -28,9 +29,41 @@
             font-weight: 600;
         }
 
-        /* CONFIGURACIÓN PARA EL PDF - Esto asegura una impresión limpia */
+        /* Botones de Accesibilidad (Aumentar Fuente) */
+        .accessibility-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .font-btn {
+            background-color: white;
+            border: 2px solid #4a7c59;
+            color: #4a7c59;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .font-btn:hover {
+            background-color: #4a7c59;
+            color: white;
+        }
+
+        .font-btn.active {
+            background-color: #4a7c59;
+            color: white;
+        }
+
+        /* Estilos para la impresión (PDF) */
         @media print {
-            header, footer, .welcome-container {
+            .welcome-container, .accessibility-controls {
                 display: none !important;
             }
             body {
@@ -39,13 +72,19 @@
             #bp-webchat-container {
                 position: relative !important;
                 width: 100% !important;
-                height: auto !important;
                 box-shadow: none !important;
             }
         }
     </style>
 </head>
 <body>
+
+    <div class="accessibility-controls">
+        <span style="align-self: center; color: #4a7c59; font-size: 0.9em; font-weight: 600;">Tamaño de letra:</span>
+        <button class="font-btn" onclick="setFontSize('15px')">A</button>
+        <button class="font-btn" onclick="setFontSize('19px')">A+</button>
+        <button class="font-btn" onclick="setFontSize('23px')">A++</button>
+    </div>
 
     <div class="welcome-container">
         <h1>Bienvenido a AlmBot</h1>
@@ -56,41 +95,49 @@
     <script src="https://files.bpcontent.cloud/2024/10/21/18/20241021183141-8J5E6R3Y.js"></script>
 
     <script>
+        // Lógica de Persistencia de Fuente
+        const currentFontSize = localStorage.getItem('almbot-font-size') || '18px';
+
+        function setFontSize(size) {
+            localStorage.setItem('almbot-font-size', size);
+            window.location.reload(); // Recargamos para aplicar el nuevo CSS al Iframe
+        }
+
         window.botpressWebChat.init({
-            // Aquí se aplican los cambios de fuente y tamaño de letra
             "extraStylesheet": `
-                /* Fuente general del chat */
+                /* Aplicamos la fuente Quicksand */
                 body {
                     font-family: 'Quicksand', sans-serif !important;
                 }
 
-                /* Aumentar tamaño de mensajes del bot y usuario */
+                /* Tamaño dinámico para los mensajes */
                 .bpw-chat-bubble-content {
-                    font-size: 18px !important;
+                    font-size: ${currentFontSize} !important;
                     line-height: 1.5 !important;
                 }
 
-                /* Aumentar texto de la caja donde escribe el usuario */
+                /* Tamaño de la caja de escritura */
                 .bpw-composer textarea {
                     font-size: 16px !important;
                 }
 
-                /* Título de la cabecera */
+                /* Título del Chat */
                 .bpw-header-title {
                     font-size: 20px !important;
-                    font-weight: 600 !important;
                 }
 
-                /* Estilo de los botones de opciones (Choices) */
+                /* Botones de opciones dentro del chat */
                 .bpw-floating-button {
                     font-size: 16px !important;
                 }
-                
-                /* Ajuste de los contenedores de mensajes */
-                .bpw-message-container {
-                    margin-bottom: 15px !important;
-                }
             `
+        });
+
+        // Resaltar el botón activo según la fuente guardada
+        document.querySelectorAll('.font-btn').forEach(btn => {
+            if (btn.innerText === 'A' && currentFontSize === '15px') btn.classList.add('active');
+            if (btn.innerText === 'A+' && currentFontSize === '19px') btn.classList.add('active');
+            if (btn.innerText === 'A++' && currentFontSize === '23px') btn.classList.add('active');
         });
     </script>
 </body>
