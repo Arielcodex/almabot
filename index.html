@@ -29,31 +29,36 @@
             font-weight: 600;
         }
 
-        /* Botones de Accesibilidad (Aumentar Fuente) */
-        .accessibility-controls {
+        /* Controles superiores agrupados */
+        .top-controls {
             position: fixed;
             top: 20px;
             right: 20px;
             display: flex;
-            gap: 10px;
+            align-items: center;
+            gap: 12px;
             z-index: 9999;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
-        .font-btn {
-            background-color: white;
-            border: 2px solid #4a7c59;
-            color: #4a7c59;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
+        .font-btn, .end-btn {
             font-family: 'Quicksand', sans-serif;
             font-weight: 600;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 20px;
+            border: 1.5px solid #4a7c59;
         }
 
-        .font-btn:hover {
-            background-color: #4a7c59;
-            color: white;
+        /* Estilo botones de fuente */
+        .font-btn {
+            background-color: white;
+            color: #4a7c59;
+            padding: 5px 10px;
+            font-size: 0.9em;
         }
 
         .font-btn.active {
@@ -61,29 +66,39 @@
             color: white;
         }
 
-        /* Estilos para la impresión (PDF) */
+        /* Estilo botón finalizar */
+        .end-btn {
+            background-color: #fff1f1;
+            border-color: #e57373;
+            color: #c62828;
+            padding: 5px 15px;
+            font-size: 0.85em;
+        }
+
+        .font-btn:hover, .end-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Limpieza para el PDF */
         @media print {
-            .welcome-container, .accessibility-controls {
+            .welcome-container, .top-controls {
                 display: none !important;
             }
-            body {
-                background: white !important;
-            }
-            #bp-webchat-container {
-                position: relative !important;
-                width: 100% !important;
-                box-shadow: none !important;
-            }
+            body { background: white !important; }
+            #bp-webchat-container { position: relative !important; width: 100% !important; box-shadow: none !important; }
         }
     </style>
 </head>
 <body>
 
-    <div class="accessibility-controls">
-        <span style="align-self: center; color: #4a7c59; font-size: 0.9em; font-weight: 600;">Tamaño de letra:</span>
-        <button class="font-btn" onclick="setFontSize('15px')">A</button>
-        <button class="font-btn" onclick="setFontSize('19px')">A+</button>
-        <button class="font-btn" onclick="setFontSize('23px')">A++</button>
+    <div class="top-controls">
+        <div style="display: flex; gap: 4px;">
+            <button class="font-btn" id="btn-sm" onclick="setFontSize('15px')">A</button>
+            <button class="font-btn" id="btn-md" onclick="setFontSize('19px')">A+</button>
+            <button class="font-btn" id="btn-lg" onclick="setFontSize('23px')">A++</button>
+        </div>
+        <div style="width: 1px; height: 20px; background: #ddd;"></div>
+        <button class="end-btn" onclick="terminateSession()">✕ Finalizar</button>
     </div>
 
     <div class="welcome-container">
@@ -95,50 +110,43 @@
     <script src="https://files.bpcontent.cloud/2024/10/21/18/20241021183141-8J5E6R3Y.js"></script>
 
     <script>
-        // Lógica de Persistencia de Fuente
-        const currentFontSize = localStorage.getItem('almbot-font-size') || '18px';
+        // 1. LEER EL TAMAÑO GUARDADO
+        const currentFontSize = localStorage.getItem('almbot-font-size') || '19px';
 
+        // 2. FUNCIÓN PARA CAMBIAR TAMAÑO
         function setFontSize(size) {
             localStorage.setItem('almbot-font-size', size);
-            window.location.reload(); // Recargamos para aplicar el nuevo CSS al Iframe
+            window.location.reload();
         }
 
+        // 3. FUNCIÓN PARA FINALIZAR
+        function terminateSession() {
+            window.botpressWebChat.sendPayload({
+                type: 'text',
+                text: 'finalizar_sesion_ahora'
+            });
+        }
+
+        // 4. INICIALIZAR BOT CON EL TAMAÑO DINÁMICO
         window.botpressWebChat.init({
             "extraStylesheet": `
-                /* Aplicamos la fuente Quicksand */
-                body {
-                    font-family: 'Quicksand', sans-serif !important;
+                body { font-family: 'Quicksand', sans-serif !important; }
+                
+                /* AQUÍ SE APLICA EL TAMAÑO DE FUENTE */
+                .bpw-chat-bubble-content { 
+                    font-size: ${currentFontSize} !important; 
+                    line-height: 1.5 !important; 
                 }
-
-                /* Tamaño dinámico para los mensajes */
-                .bpw-chat-bubble-content {
-                    font-size: ${currentFontSize} !important;
-                    line-height: 1.5 !important;
-                }
-
-                /* Tamaño de la caja de escritura */
-                .bpw-composer textarea {
-                    font-size: 16px !important;
-                }
-
-                /* Título del Chat */
-                .bpw-header-title {
-                    font-size: 20px !important;
-                }
-
-                /* Botones de opciones dentro del chat */
-                .bpw-floating-button {
-                    font-size: 16px !important;
-                }
+                
+                .bpw-header-title { font-size: 18px !important; }
+                .bpw-composer textarea { font-size: 16px !important; }
             `
         });
 
-        // Resaltar el botón activo según la fuente guardada
-        document.querySelectorAll('.font-btn').forEach(btn => {
-            if (btn.innerText === 'A' && currentFontSize === '15px') btn.classList.add('active');
-            if (btn.innerText === 'A+' && currentFontSize === '19px') btn.classList.add('active');
-            if (btn.innerText === 'A++' && currentFontSize === '23px') btn.classList.add('active');
-        });
+        // Resaltar botón activo
+        if (currentFontSize === '15px') document.getElementById('btn-sm').classList.add('active');
+        if (currentFontSize === '19px') document.getElementById('btn-md').classList.add('active');
+        if (currentFontSize === '23px') document.getElementById('btn-lg').classList.add('active');
     </script>
 </body>
 </html>
