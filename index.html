@@ -3,43 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Almbot | Guía Holística</title>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+    <title>AlmBot - Guía de Sanación</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    
     <style>
-        /* Fondo minimalista para que resalte el chat de Botpress */
         body {
             margin: 0;
             padding: 0;
             font-family: 'Quicksand', sans-serif;
-            background-color: #f0f4f3;
+            background-color: #f4f7f6; /* Un color suave de fondo */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-image: radial-gradient(#a8e6cf 0.5px, #f0f4f3 0.5px);
-            background-size: 20px 20px;
         }
 
         .welcome-container {
             text-align: center;
-            color: #4a4a4a;
             padding: 20px;
         }
 
-        h1 { font-weight: 500; color: #7db9a1; }
-        p { font-weight: 300; opacity: 0.8; }
+        h1 {
+            color: #4a7c59;
+            font-weight: 600;
+        }
+
+        /* CONFIGURACIÓN PARA EL PDF - Esto asegura una impresión limpia */
+        @media print {
+            header, footer, .welcome-container {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+            }
+            #bp-webchat-container {
+                position: relative !important;
+                width: 100% !important;
+                height: auto !important;
+                box-shadow: none !important;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="welcome-container">
-        <h1>Almbot</h1>
-        <p>Tu espacio de sanación y equilibrio</p>
-        <small>Haz clic en el icono para comenzar</small>
+        <h1>Bienvenido a AlmBot</h1>
+        <p>Tu espacio de bio-decodificación y sanación.</p>
     </div>
 
-    <script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js"></script>
-    <script src="https://files.bpcontent.cloud/2026/04/18/02/20260418025527-TASNZZYT.js" defer></script>
+    <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2024/10/21/18/20241021183141-8J5E6R3Y.js"></script>
 
+    <script>
+        window.botpressWebChat.init({
+            // Aquí se aplican los cambios de fuente y tamaño de letra
+            "extraStylesheet": `
+                /* Fuente general del chat */
+                body {
+                    font-family: 'Quicksand', sans-serif !important;
+                }
+
+                /* Aumentar tamaño de mensajes del bot y usuario */
+                .bpw-chat-bubble-content {
+                    font-size: 18px !important;
+                    line-height: 1.5 !important;
+                }
+
+                /* Aumentar texto de la caja donde escribe el usuario */
+                .bpw-composer textarea {
+                    font-size: 16px !important;
+                }
+
+                /* Título de la cabecera */
+                .bpw-header-title {
+                    font-size: 20px !important;
+                    font-weight: 600 !important;
+                }
+
+                /* Estilo de los botones de opciones (Choices) */
+                .bpw-floating-button {
+                    font-size: 16px !important;
+                }
+                
+                /* Ajuste de los contenedores de mensajes */
+                .bpw-message-container {
+                    margin-bottom: 15px !important;
+                }
+            `
+        });
+    </script>
 </body>
 </html>
