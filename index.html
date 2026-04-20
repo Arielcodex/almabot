@@ -3,27 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlmBot - Herramientas para la vida</title>
+    <title>AlmBot - Facilitador de herramientas para la vida</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
         body {
-            margin: 0; padding: 0;
+            margin: 0;
+            padding: 0;
             font-family: 'Quicksand', sans-serif;
             background-color: #f4f7f6;
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .welcome-container { text-align: center; padding: 20px; }
-        h1 { color: #4a7c59; font-weight: 600; margin-bottom: 10px; font-size: 2.8em; }
+        .welcome-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 { 
+            color: #4a7c59; 
+            font-weight: 600; 
+            margin-bottom: 10px; 
+            font-size: 2.8em;
+        }
+
         .subtitle { 
-            color: #666; font-size: 1.2em; font-style: italic; 
-            max-width: 600px; line-height: 1.4; margin: 0 auto;
+            color: #666; 
+            font-size: 1.2em; 
+            font-style: italic;
+            max-width: 600px;
+            line-height: 1.4;
+            margin: 0 auto;
         }
 
-        /* Forzamos que Botpress sea visible sobre el fondo */
-        #bp-webchat { z-index: 9999; }
+        /* Limpieza para impresión de la bitácora */
+        @media print {
+            .welcome-container { display: none !important; }
+            body { background: white !important; }
+        }
     </style>
 </head>
 <body>
@@ -37,19 +58,29 @@
     <script src="https://files.bpcontent.cloud/2024/10/21/18/20241021183141-8J5E6R3Y.js"></script>
 
     <script>
+        // Inicialización limpia sin botones externos de fuente
         window.botpressWebChat.init({
             "extraStylesheet": `
-                body { font-family: 'Quicksand', sans-serif !important; }
-                .bpw-header-container { background-color: #4a7c59 !important; }
-                /* Forzamos la aparición del botón de inicio (el logo) */
-                .bpw-floating-button { 
-                    display: flex !important; 
-                    visibility: visible !important; 
+                body { 
+                    font-family: 'Quicksand', sans-serif !important; 
+                }
+                .bpw-header-container {
+                    background-color: #4a7c59 !important;
+                }
+                .bpw-chat-bubble-content {
+                    font-size: 18px !important;
+                    line-height: 1.5 !important;
+                }
+                /* FORZAMOS QUE EL BOTÓN FLOTANTE SEA VISIBLE */
+                .bpw-floating-button {
+                    display: flex !important;
+                    visibility: visible !important;
                     background-color: #4a7c59 !important;
                 }
             `,
             "enableConversationDeletion": true,
-            "showPoweredBy": false
+            "showPoweredBy": false,
+            "theme": "light"
         });
     </script>
 </body>
